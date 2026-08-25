@@ -103,7 +103,9 @@
         streamCamera=await navigator.mediaDevices.getUserMedia({
           video:{
             facingMode:{ideal:cameraFrontal?'user':'environment'},
-            
+            width:{ideal:3840},
+            height:{ideal:2160},
+            frameRate:{ideal:30,max:30}
           },
           audio:true
         });
@@ -141,12 +143,14 @@
 
     async function fotografar(){
       if(!camera.videoWidth||!(await garantirMoldura())) return;
-      canvasFoto.width=1080;
-      canvasFoto.height=1920;
+      canvasFoto.width=1440;
+      canvasFoto.height=2560;
       const ctx=canvasFoto.getContext('2d');
+      ctx.imageSmoothingEnabled=true;
+      ctx.imageSmoothingQuality='high';
       desenharCapa(ctx,camera,camera.videoWidth,camera.videoHeight,canvasFoto.width,canvasFoto.height,cameraFrontal);
       ctx.drawImage(moldura,0,0,canvasFoto.width,canvasFoto.height);
-      fotoBlob=await new Promise(resolve=>canvasFoto.toBlob(resolve,'image/jpeg',0.95));
+      fotoBlob=await new Promise(resolve=>canvasFoto.toBlob(resolve,'image/jpeg',0.99));
       if(fotoUrl) URL.revokeObjectURL(fotoUrl);
       fotoUrl=URL.createObjectURL(fotoBlob);
       imagemFoto.src=fotoUrl;
